@@ -145,21 +145,12 @@
                        [:sources [:source "src"]]
                        (into [:packages] pkg-sexps)]]
 
-    ;; Materialise the XML to a string first (via StringWriter) so we never
-    ;; touch the output file with a half-open StAX writer.  clojure.data.xml
-    ;; always prepends <?xml ...?> regardless of the Clojure or data.xml
-    ;; version; strip it so we can insert our own prolog + DOCTYPE in its place.
-    (let [sw  (java.io.StringWriter.)
-          _   (xml/emit (xml/sexp-as-element coverage-sexp) sw)
-          body (str/replace-first (.toString sw) #"^<\?xml[^?]*\?>\s*" "")
-          out  (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                    "<!DOCTYPE coverage SYSTEM "
-                    "\"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n"
-                    body)]
-      (io/make-parents output-file)
-      (println "Writing Cobertura XML report to:" (.getAbsolutePath output-file))
-      (spit output-file out)
-      (println (format "Coverage: %.1f%% (%d/%d instrumented lines)"
-                       (* 100.0 (line-rate total-covered total-instrd))
-                       total-covered
-                       total-instrd)))))
+    (io/make-parents output-file)
+    (println "Writing Cobertura XML report to:" (.getAbsolutePath output-file))
+    (with-open [writer (io/writer output-file)]
+      (xml/emit (xml/sexp-as-element coverage-sexp) writer
+                :doctype "<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">"))
+    (println (format "Coverage: %.1f%% (%d/%d instrumented lines)"
+                     (* 100.0 (line-rate total-covered total-instrd))
+                     total-covered
+                     total-instrd))))

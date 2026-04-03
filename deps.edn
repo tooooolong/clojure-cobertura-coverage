@@ -1,6 +1,7 @@
 {:paths ["src"]
 
- :deps {org.clojure/clojure {:mvn/version "1.10.0"}}
+ :deps {org.clojure/clojure  {:mvn/version "1.10.0"}
+        org.clojure/data.xml {:mvn/version "0.2.0-alpha9"}}
 
  :aliases
  {;; Run tests with: clj -M:test
