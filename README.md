@@ -1,5 +1,8 @@
 # clojure-cobertura-coverage
 
+[![CI](https://github.com/tooooolong/clojure-cobertura-coverage/actions/workflows/ci.yml/badge.svg)](https://github.com/tooooolong/clojure-cobertura-coverage/actions/workflows/ci.yml)
+[![Clojars Project](https://img.shields.io/clojars/v/tooooolong/clojure-cobertura-coverage.svg)](https://clojars.org/tooooolong/clojure-cobertura-coverage)
+
 A [Cloverage](https://github.com/cloverage/cloverage) custom reporter plugin that outputs
 [Cobertura XML](http://cobertura.sourceforge.net/) coverage reports.
 
@@ -245,6 +248,42 @@ This reporter:
    per file to obtain per-line hit counts
 3. Builds a Cobertura XML document mapping namespaces → packages/classes
 4. Writes `cobertura.xml` to the output directory
+
+---
+
+## Releasing to Clojars
+
+This project uses a GitHub Actions [release workflow](.github/workflows/release.yml) that
+deploys to [Clojars](https://clojars.org) automatically when you push a `v*` tag.
+
+### Prerequisites
+
+Add two repository secrets in **Settings → Secrets and variables → Actions**:
+
+| Secret | Value |
+|--------|-------|
+| `CLOJARS_USERNAME` | Your Clojars username |
+| `CLOJARS_PASSWORD` | A Clojars [deploy token](https://clojars.org/tokens) (not your password) |
+
+### Steps to release
+
+```bash
+# 1. Ensure main is clean and tests pass
+git checkout main
+git pull
+
+# 2. Tag the release (the workflow strips the leading 'v')
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+The workflow will:
+1. Extract the version from the tag (`v0.2.0` → `0.2.0`)
+2. Patch `project.clj` with that version in the ephemeral CI workspace
+3. Run `lein deploy clojars`
+
+The `project.clj` in the repository always stays at the **development version** (`0.1.0`).
+Bump it manually before tagging if you want the version shown in editor tooling to match.
 
 ---
 

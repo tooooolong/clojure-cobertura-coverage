@@ -3,7 +3,16 @@
  :deps {org.clojure/clojure {:mvn/version "1.10.0"}}
 
  :aliases
- {;; Run cloverage with the Cobertura XML reporter:
+ {;; Run tests with: clj -M:test
+  ;;
+  ;; Uses clojure.main -e to evaluate an inline test runner — no extra
+  ;; dependencies required. Exits non-zero when any test fails or errors.
+  :test
+  {:extra-paths ["test"]
+   :main-opts   ["-e"
+                 "(require 'example.core-test 'clojure.test)(let [r (clojure.test/run-tests 'example.core-test)](System/exit (if (pos? (+ (:fail r) (:error r))) 1 0)))"]}
+
+  ;; Run cloverage with the Cobertura XML reporter:
   ;;   clj -M:coverage
   ;;
   ;; Limit which namespaces are instrumented with --ns-regex (remove or
