@@ -32,7 +32,7 @@ Add the library to your project's `:dependencies` (or `:dev` profile):
 
 ```clojure
 ;; project.clj
-:dependencies [[org.clojars.tooooolong/clojure-cobertura-coverage "0.1.0"]]
+:dependencies [[org.clojars.tooooolong/clojure-cobertura-coverage "0.1.3"]]
 :profiles {:dev {:plugins [[lein-cloverage "1.2.4"]]}}
 ```
 
@@ -47,7 +47,7 @@ Add a `:coverage` alias to your `deps.edn`:
   {:extra-paths ["test"]
    :extra-deps  {cloverage/cloverage {:mvn/version "1.2.4"}
                  org.clojars.tooooolong/clojure-cobertura-coverage
-                 {:mvn/version "0.1.0"}}
+                 {:mvn/version "0.1.3"}}
    :main-opts   ["-m" "cloverage.coverage"
                  "--custom-report" "cloverage.coverage.cobertura/report"
                  "--output" "target/coverage"]}}}
@@ -276,22 +276,21 @@ git checkout main
 git pull
 
 # 2. Tag the release (the workflow strips the leading 'v')
-git tag v0.2.0
-git push origin v0.2.0
+git tag vX.Y.Z
+git push origin vX.Y.Z
 ```
 
 The workflow will:
-1. Extract the version from the tag (`v0.2.0` → `0.2.0`)
+1. Extract the version from the tag (`vX.Y.Z` → `X.Y.Z`)
 2. Patch `project.clj` with that version in the ephemeral CI workspace
 3. Run `lein deploy clojars`
 
-The `project.clj` in the repository always stays at the **development version** (`0.1.0`).
-Bump it manually before tagging if you want the version shown in editor tooling to match.
+The checked-in `project.clj` can stay on a placeholder development version.
+The release workflow rewrites it in CI from the tag you push, so the published
+artifact version always matches the release tag.
 
 ---
 
 ## License
-
-Copyright © 2024 tooooolong
 
 Distributed under the [Eclipse Public License 2.0](LICENSE).
