@@ -77,16 +77,27 @@
   [file-forms]
   (->> (line-stats file-forms)
        (filter :instrumented?)
-       (map (fn [{:keys [line hit]}]
+       (map (fn [{:keys [line times-hit]}]
               [:line {:number (str line)
-                      :hits   (str (max 0 (or hit 0)))
+                      :hits   (str (max 0 (or times-hit 0)))
                       :branch "false"}]))))
+
+(defn- cobertura-line-summary
+  "Returns Cobertura-compatible line coverage totals for a file.
+  A line is covered when its emitted Cobertura <line hits=\"...\"> value is > 0."
+  [file-forms]
+  (let [lines   (line-stats file-forms)
+        valid   (count (filter :instrumented? lines))
+        covered (count (filter #(pos? (or (:times-hit %) 0)) lines))]
+    {:covered covered
+     :valid   valid}))
 
 (defn- class-sexp
   "Builds the [:class ...] sexp for a single source file."
   [fstat file-forms]
-  (let [{:keys [file lib covered-lines instrd-lines]} fstat
-        rate (line-rate (or covered-lines 0) (or instrd-lines 0))]
+  (let [{:keys [file lib]} fstat
+        {:keys [covered valid]} (cobertura-line-summary file-forms)
+        rate (line-rate covered valid)]
     [:class {:name        (str lib)
              :filename    (normalize-path file)
              :line-rate   (fmt-rate rate)
@@ -98,8 +109,8 @@
 (defn- package-sexp
   "Builds the [:package ...] sexp, aggregating coverage across all classes."
   [pkg-name entries]
-  (let [pkg-covered (reduce + 0 (map #(or (:covered-lines %) 0) entries))
-        pkg-instrd  (reduce + 0 (map #(or (:instrd-lines %) 0) entries))]
+  (let [pkg-covered (reduce + 0 (map #(or (:cobertura-covered %) 0) entries))
+        pkg-instrd  (reduce + 0 (map #(or (:cobertura-valid %) 0) entries))]
     [:package {:name        pkg-name
                :line-rate   (fmt-rate (line-rate pkg-covered pkg-instrd))
                :branch-rate "0.0"
@@ -126,17 +137,22 @@
         stats          (doall (file-stats forms))
         forms-by-file  (group-by :file forms)
         sources        (source-roots args)
-        total-covered  (reduce + 0 (map #(or (:covered-lines %) 0) stats))
-        total-instrd   (reduce + 0 (map #(or (:instrd-lines %) 0) stats))
         timestamp      (quot (System/currentTimeMillis) 1000)
 
         ;; Enrich each per-file stat with its package name and class sexp
-        enriched (map (fn [fstat]
-                        (let [file-forms (get forms-by-file (:file fstat) [])]
-                          (assoc fstat
-                                 :pkg  (ns->package (:lib fstat))
-                                 :sexp (class-sexp fstat file-forms))))
-                      stats)
+        enriched (doall
+                  (map (fn [fstat]
+                         (let [file-forms (get forms-by-file (:file fstat) [])
+                               {:keys [covered valid] :as summary} (cobertura-line-summary file-forms)]
+                           (assoc fstat
+                                  :pkg               (ns->package (:lib fstat))
+                                  :cobertura-covered covered
+                                  :cobertura-valid   valid
+                                  :sexp              (class-sexp fstat file-forms))))
+                       stats))
+
+        total-covered  (reduce + 0 (map :cobertura-covered enriched))
+        total-instrd   (reduce + 0 (map :cobertura-valid enriched))
 
         ;; Group classes by package
         by-pkg (group-by :pkg enriched)
