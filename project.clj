@@ -6,12 +6,11 @@
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [org.clojure/data.xml "0.2.0-alpha10"]
                  [cloverage "1.2.4"]]
-  :profiles {:dev {:plugins [[lein-cloverage "1.2.4"]]}}
+  :profiles {:dev {:source-paths ["dev"]
+                   :plugins [[lein-cloverage "1.2.4"]]}}
   :deploy-repositories [["clojars" {:url           "https://clojars.org/repo"
                                      :username      :env/clojars_username
                                      :password      :env/clojars_password
                                      :sign-releases false}]]
-  ;; Run coverage only on the example namespace to demonstrate the reporter.
-  ;; Remove or adjust :ns-regex when using this reporter in your own project.
   :cloverage {:ns-regex [#"^example\..*"]
               :output   "target/coverage"})
