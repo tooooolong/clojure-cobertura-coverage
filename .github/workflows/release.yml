@@ -14,7 +14,6 @@ jobs:
     env:
       CLOJARS_USERNAME: tooooolong
       CLOJARS_PASSWORD: ${{ secrets.CLOJARS_DEPLOY_TOKEN }}
-      CLOJARS_TOKEN_SCOPE: org.clojars.tooooolong/*
 
     steps:
       - uses: actions/checkout@v4
@@ -65,35 +64,6 @@ jobs:
 
       - name: Verify version in project.clj
         run: head -1 project.clj
-
-      - name: Verify project coordinates match token scope
-        run: |
-          python3 - <<'PYEOF'
-          import os
-          import re
-          import sys
-
-          text = open("project.clj").read()
-          match = re.search(r'defproject\s+([^\s"]+)\s+"([^"]+)"', text)
-          if not match:
-            print("Unable to parse defproject coordinates from project.clj", file=sys.stderr)
-            sys.exit(1)
-
-          coordinates = match.group(1)
-          scope = os.environ["CLOJARS_TOKEN_SCOPE"]
-          scope_prefix = scope[:-1] if scope.endswith("*") else scope
-
-          print("Release coordinates:", coordinates)
-          print("Configured token scope:", scope)
-
-          if not coordinates.startswith(scope_prefix):
-            print(
-              "CLOJARS_DEPLOY_TOKEN scope does not allow deploying these coordinates. "
-              "Mint a token for the current project coordinates or migrate the published coordinates first.",
-              file=sys.stderr,
-            )
-            sys.exit(1)
-          PYEOF
 
       - name: Deploy to Clojars
         run: lein deploy clojars

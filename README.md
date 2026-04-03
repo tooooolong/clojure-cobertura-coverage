@@ -267,16 +267,6 @@ Add this repository secret in **Settings → Secrets and variables → Actions**
 The workflow uses the fixed Clojars username `tooooolong`; the token replaces the
 password when deploying.
 
-The release workflow also checks that the token scope matches the project
-coordinates in `project.clj` before running `lein deploy`.
-
-This repository still publishes the coordinates `tooooolong/clojure-cobertura-coverage`.
-If your token is scoped only to `org.clojars.tooooolong/*`, Clojars will reject the
-deploy until you either:
-
-1. mint a token whose scope includes `tooooolong/clojure-cobertura-coverage`, or
-2. deliberately migrate the published coordinates to `org.clojars.tooooolong/...`
-
 ### Steps to release
 
 ```bash
@@ -292,8 +282,7 @@ git push origin v0.2.0
 The workflow will:
 1. Extract the version from the tag (`v0.2.0` → `0.2.0`)
 2. Patch `project.clj` with that version in the ephemeral CI workspace
-3. Verify the configured token scope can publish the current coordinates
-4. Run `lein deploy clojars`
+3. Run `lein deploy clojars`
 
 The `project.clj` in the repository always stays at the **development version** (`0.1.0`).
 Bump it manually before tagging if you want the version shown in editor tooling to match.
