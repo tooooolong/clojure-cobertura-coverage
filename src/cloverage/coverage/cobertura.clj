@@ -148,14 +148,16 @@
     (io/make-parents output-file)
     (println "Writing Cobertura XML report to:" (.getAbsolutePath output-file))
     (with-open [writer (io/writer output-file)]
-      ;; Prepend the XML declaration and DOCTYPE before the element body.
-      ;; clojure.data.xml/emit also emits a declaration; we suppress it by
-      ;; writing the prolog manually then using emit-str on the element.
       (.write writer "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
       (.write writer "<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n")
-      ;; emit without its own prolog via the :xml-declaration false option
-      (xml/emit (xml/sexp-as-element coverage-sexp) writer
-                {:xml-declaration false}))
+      ;; data.xml/emit always prepends its own <?xml ...?> declaration and does
+      ;; not reliably honour :xml-declaration false across all Clojure versions
+      ;; (1.10 rejects a trailing map arg; 1.11+ accepts it but alpha6 ignores
+      ;; the option).  Emit to a StringWriter first, strip the declaration, then
+      ;; copy only the element body to the real writer.
+      (let [sw (java.io.StringWriter.)]
+        (xml/emit (xml/sexp-as-element coverage-sexp) sw)
+        (.write writer (str/replace-first (.toString sw) #"^<\?xml[^?]*\?>\s*" ""))))
     (println (format "Coverage: %.1f%% (%d/%d instrumented lines)"
                      (* 100.0 (line-rate total-covered total-instrd))
                      total-covered

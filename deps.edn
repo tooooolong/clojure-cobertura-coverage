@@ -23,7 +23,8 @@
    :main-opts   ["-m" "cloverage.coverage"
                  "--custom-report" "cloverage.coverage.cobertura/report"
                  "--ns-regex"      "^example\\..*"
-                 "--output"        "target/coverage"]}
+                 "--output"        "target/coverage"
+                 "--low-watermark" "0"]}
 
   ;; Same as :coverage but also generates the built-in HTML report:
   ;;   clj -M:coverage-html
@@ -34,4 +35,5 @@
                  "--custom-report" "cloverage.coverage.cobertura/report"
                  "--html"
                  "--ns-regex"      "^example\\..*"
-                 "--output"        "target/coverage"]}}}
+                 "--output"        "target/coverage"
+                 "--low-watermark" "0"]}}}
