@@ -6,20 +6,18 @@
  :aliases
  {;; Run tests with: clj -M:test
   ;;
-  ;; Uses cognitect-labs/test-runner. Discovers tests automatically under
-  ;; the "test" directory — no need to hard-code namespace names.
+  ;; The example namespace lives under dev/ so it is NOT packaged in the
+  ;; published JAR. Adjust the require and run-tests call for your own project.
   :test
   {:extra-paths ["dev" "test"]
-   :extra-deps  {io.github.cognitect-labs/test-runner
-                 {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
-   :main-opts   ["-m" "cognitect.test-runner"]
-   :exec-fn     cognitect.test-runner.api/test}
+   :main-opts   ["-e"
+                 "(require 'example.core-test 'clojure.test)(let [r (clojure.test/run-tests 'example.core-test)](System/exit (if (pos? (+ (:fail r) (:error r))) 1 0)))"]}
 
   ;; Run cloverage with the Cobertura XML reporter:
   ;;   clj -M:coverage
   ;;
-  ;; Limit which namespaces are instrumented with --ns-regex (remove or
-  ;; adjust when using this reporter in your own project).
+  ;; The example namespace lives under dev/ and is only used for
+  ;; demonstration. Adjust --ns-regex for your own project.
   :coverage
   {:extra-paths ["dev" "test"]
    :extra-deps  {cloverage/cloverage {:mvn/version "1.2.4"}}
