@@ -1,7 +1,7 @@
 # clojure-cobertura-coverage
 
 [![CI](https://github.com/tooooolong/clojure-cobertura-coverage/actions/workflows/ci.yml/badge.svg)](https://github.com/tooooolong/clojure-cobertura-coverage/actions/workflows/ci.yml)
-[![Clojars Project](https://img.shields.io/clojars/v/tooooolong/clojure-cobertura-coverage.svg)](https://clojars.org/tooooolong/clojure-cobertura-coverage)
+[![Clojars Project](https://img.shields.io/clojars/v/org.clojars.tooooolong/clojure-cobertura-coverage.svg)](https://clojars.org/org.clojars.tooooolong/clojure-cobertura-coverage)
 
 A [Cloverage](https://github.com/cloverage/cloverage) custom reporter plugin that outputs
 [Cobertura XML](http://cobertura.sourceforge.net/) coverage reports.
@@ -32,7 +32,7 @@ Add the library to your project's `:dependencies` (or `:dev` profile):
 
 ```clojure
 ;; project.clj
-:dependencies [[tooooolong/clojure-cobertura-coverage "0.1.0"]]
+:dependencies [[org.clojars.tooooolong/clojure-cobertura-coverage "0.1.0"]]
 :profiles {:dev {:plugins [[lein-cloverage "1.2.4"]]}}
 ```
 
@@ -45,8 +45,9 @@ Add a `:coverage` alias to your `deps.edn`:
 {:aliases
  {:coverage
   {:extra-paths ["test"]
-   :extra-deps  {cloverage/cloverage                        {:mvn/version "1.2.4"}
-                 tooooolong/clojure-cobertura-coverage      {:mvn/version "0.1.0"}}
+   :extra-deps  {cloverage/cloverage {:mvn/version "1.2.4"}
+                 org.clojars.tooooolong/clojure-cobertura-coverage
+                 {:mvn/version "0.1.0"}}
    :main-opts   ["-m" "cloverage.coverage"
                  "--custom-report" "cloverage.coverage.cobertura/report"
                  "--output" "target/coverage"]}}}

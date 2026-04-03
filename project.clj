@@ -1,4 +1,4 @@
-(defproject tooooolong/clojure-cobertura-coverage "0.1.0"
+(defproject org.clojars.tooooolong/clojure-cobertura-coverage "0.1.0"
   :description "Cloverage custom reporter that generates Cobertura XML coverage reports"
   :url "https://github.com/tooooolong/clojure-cobertura-coverage"
   :license {:name "Eclipse Public License 2.0"
