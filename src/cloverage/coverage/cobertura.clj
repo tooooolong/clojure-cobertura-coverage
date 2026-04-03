@@ -56,6 +56,18 @@
   [file]
   (str/replace (str file) java.io.File/separator "/"))
 
+(defn- source-roots
+  "Returns Cobertura source roots from cloverage args, preserving order."
+  [args]
+  (let [roots (->> (:src-ns-path args)
+                   (map normalize-path)
+                   (map #(str/replace % #"/+$" ""))
+                   (remove str/blank?)
+                   distinct)]
+    (if (seq roots)
+      roots
+      ["src"])))
+
 ;; ---------------------------------------------------------------------------
 ;; XML sexp builders
 ;; ---------------------------------------------------------------------------
@@ -109,10 +121,11 @@
     :forms   - raw coverage forms collection
     :args    - parsed cloverage CLI options
     :project - Leiningen project map"
-  [{:keys [output forms]}]
+  [{:keys [output forms args]}]
   (let [output-file    (io/file output "cobertura.xml")
         stats          (doall (file-stats forms))
         forms-by-file  (group-by :file forms)
+        sources        (source-roots args)
         total-covered  (reduce + 0 (map #(or (:covered-lines %) 0) stats))
         total-instrd   (reduce + 0 (map #(or (:instrd-lines %) 0) stats))
         timestamp      (quot (System/currentTimeMillis) 1000)
@@ -142,7 +155,7 @@
                         :complexity       "0"
                         :version          "1"
                         :timestamp        (str timestamp)}
-                       [:sources [:source "src"]]
+                       (into [:sources] (map (fn [source] [:source source]) sources))
                        (into [:packages] pkg-sexps)]]
 
     (io/make-parents output-file)

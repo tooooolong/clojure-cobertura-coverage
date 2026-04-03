@@ -10,8 +10,9 @@
   ;; published JAR. Adjust the require and run-tests call for your own project.
   :test
   {:extra-paths ["dev" "test"]
+   :extra-deps  {cloverage/cloverage {:mvn/version "1.2.4"}}
    :main-opts   ["-e"
-                 "(require 'example.core-test 'clojure.test)(let [r (clojure.test/run-tests 'example.core-test)](System/exit (if (pos? (+ (:fail r) (:error r))) 1 0)))"]}
+                 "(require 'example.core-test 'cloverage.coverage.cobertura-test 'clojure.test)(let [r (apply clojure.test/run-tests ['example.core-test 'cloverage.coverage.cobertura-test])](System/exit (if (pos? (+ (:fail r) (:error r))) 1 0)))"]} 
 
   ;; Run cloverage with the Cobertura XML reporter:
   ;;   clj -M:coverage
