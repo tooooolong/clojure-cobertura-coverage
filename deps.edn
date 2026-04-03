@@ -1,0 +1,28 @@
+{:paths ["src"]
+
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}}
+
+ :aliases
+ {;; Run cloverage with the Cobertura XML reporter:
+  ;;   clj -M:coverage
+  ;;
+  ;; Limit which namespaces are instrumented with --ns-regex (remove or
+  ;; adjust when using this reporter in your own project).
+  :coverage
+  {:extra-paths ["test"]
+   :extra-deps  {cloverage/cloverage {:mvn/version "1.2.4"}}
+   :main-opts   ["-m" "cloverage.coverage"
+                 "--custom-report" "cloverage.coverage.cobertura/report"
+                 "--ns-regex"      "^example\\..*"
+                 "--output"        "target/coverage"]}
+
+  ;; Same as :coverage but also generates the built-in HTML report:
+  ;;   clj -M:coverage-html
+  :coverage-html
+  {:extra-paths ["test"]
+   :extra-deps  {cloverage/cloverage {:mvn/version "1.2.4"}}
+   :main-opts   ["-m" "cloverage.coverage"
+                 "--custom-report" "cloverage.coverage.cobertura/report"
+                 "--html"
+                 "--ns-regex"      "^example\\..*"
+                 "--output"        "target/coverage"]}}}

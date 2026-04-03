@@ -15,12 +15,15 @@ summary actions), **Codecov**, and **SonarQube**.
 |---------|---------|
 | Java    | 8+      |
 | Clojure | 1.11+   |
-| Leiningen | 2.x   |
+| Leiningen | 2.x *(optional)* |
+| Clojure CLI (`clj`) | 1.11+ *(optional)* |
 | cloverage / lein-cloverage | 1.2.x |
 
 ---
 
 ## Installation
+
+### Leiningen
 
 Add the library to your project's `:dependencies` (or `:dev` profile):
 
@@ -30,11 +33,27 @@ Add the library to your project's `:dependencies` (or `:dev` profile):
 :profiles {:dev {:plugins [[lein-cloverage "1.2.4"]]}}
 ```
 
+### Clojure CLI (deps.edn)
+
+Add a `:coverage` alias to your `deps.edn`:
+
+```clojure
+;; deps.edn
+{:aliases
+ {:coverage
+  {:extra-paths ["test"]
+   :extra-deps  {cloverage/cloverage                        {:mvn/version "1.2.4"}
+                 tooooolong/clojure-cobertura-coverage      {:mvn/version "0.1.0"}}
+   :main-opts   ["-m" "cloverage.coverage"
+                 "--custom-report" "cloverage.coverage.cobertura/report"
+                 "--output" "target/coverage"]}}}
+```
+
 ---
 
 ## Usage
 
-### Via the command line
+### Leiningen — command line
 
 ```bash
 lein cloverage --custom-report cloverage.coverage.cobertura/report
@@ -43,7 +62,7 @@ lein cloverage --custom-report cloverage.coverage.cobertura/report
 The report is written to `target/coverage/cobertura.xml` (or whatever
 directory you have configured as cloverage's `:output`).
 
-### Via `project.clj`
+### Leiningen — `project.clj`
 
 ```clojure
 :cloverage {:output        "target/coverage"
@@ -56,13 +75,35 @@ Then run the normal coverage command:
 lein cloverage
 ```
 
+### Clojure CLI — `clj -M:coverage`
+
+With the alias defined in `deps.edn` (see Installation above):
+
+```bash
+clj -M:coverage
+```
+
+To override options on the command line, append them after `--`:
+
+```bash
+# Custom output directory
+clj -M:coverage --output target/my-coverage
+
+# Also generate the built-in HTML report
+clj -M:coverage --html
+```
+
 ### Combining with built-in reporters
 
 The `--custom-report` flag is additive — Cloverage still runs all the
 reporters you enable (HTML, text, etc.) in addition to the custom one:
 
 ```bash
+# Leiningen
 lein cloverage --html --custom-report cloverage.coverage.cobertura/report
+
+# Clojure CLI
+clj -M:coverage --html
 ```
 
 ---
@@ -117,7 +158,11 @@ deliberately leaves two functions (`divide`, `factorial`) untested so you
 can see partial coverage in the report.
 
 ```bash
+# Leiningen
 lein cloverage --custom-report cloverage.coverage.cobertura/report
+
+# Clojure CLI (uses the :coverage alias in this repo's deps.edn)
+clj -M:coverage
 ```
 
 After the run, inspect `target/coverage/cobertura.xml`.
@@ -131,7 +176,10 @@ After the run, inspect `target/coverage/cobertura.xml`.
 ```yaml
 test:
   script:
+    # Leiningen
     - lein cloverage --custom-report cloverage.coverage.cobertura/report
+    # — or Clojure CLI —
+    # - clj -M:coverage
   coverage: '/Coverage: (\d+\.\d+)%/'
   artifacts:
     reports:
@@ -145,7 +193,10 @@ test:
 ```groovy
 stage('Test') {
     steps {
+        // Leiningen
         sh 'lein cloverage --custom-report cloverage.coverage.cobertura/report'
+        // — or Clojure CLI —
+        // sh 'clj -M:coverage'
     }
     post {
         always {
@@ -158,8 +209,11 @@ stage('Test') {
 ### GitHub Actions
 
 ```yaml
-- name: Run tests with coverage
+- name: Run tests with coverage (Leiningen)
   run: lein cloverage --custom-report cloverage.coverage.cobertura/report
+# — or Clojure CLI —
+# - name: Run tests with coverage (Clojure CLI)
+#   run: clj -M:coverage
 
 - name: Upload coverage report
   uses: actions/upload-artifact@v4
