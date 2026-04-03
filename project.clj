@@ -12,5 +12,5 @@
                                      :sign-releases false}]]
   ;; Run coverage only on the example namespace to demonstrate the reporter.
   ;; Remove or adjust :ns-regex when using this reporter in your own project.
-  :cloverage {:ns-regex ["^example\\..*"]
+  :cloverage {:ns-regex [#"^example\..*"]
               :output   "target/coverage"})

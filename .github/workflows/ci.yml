@@ -79,7 +79,7 @@ jobs:
         env:
           CLJ_VER: ${{ matrix.clojure.version }}
         run: |
-          clj -Sdeps "{:deps {org.clojure/clojure {:mvn/version \"$CLJ_VER\"}}}" \
+          clojure -Sdeps "{:deps {org.clojure/clojure {:mvn/version \"$CLJ_VER\"}}}" \
               -M:test
 
       - name: Run coverage (clj)
@@ -87,7 +87,7 @@ jobs:
         env:
           CLJ_VER: ${{ matrix.clojure.version }}
         run: |
-          clj -Sdeps "{:deps {org.clojure/clojure {:mvn/version \"$CLJ_VER\"}}}" \
+          clojure -Sdeps "{:deps {org.clojure/clojure {:mvn/version \"$CLJ_VER\"}}}" \
               -M:coverage
 
       # ── Verify output ─────────────────────────────────────────────────────
