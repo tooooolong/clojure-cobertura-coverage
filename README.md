@@ -14,7 +14,7 @@ summary actions), **Codecov**, and **SonarQube**.
 | Tool    | Version |
 |---------|---------|
 | Java    | 8+      |
-| Clojure | 1.11+   |
+| Clojure | 1.10+   |
 | Leiningen | 2.x *(optional)* |
 | Clojure CLI (`clj`) | 1.11+ *(optional)* |
 | cloverage / lein-cloverage | 1.2.x |
