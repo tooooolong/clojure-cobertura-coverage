@@ -24,6 +24,7 @@
    :main-opts   ["-m" "cloverage.coverage"
                  "--custom-report"  "cloverage.coverage.cobertura/report"
                  "--ns-regex"       "^example\\..*"
+                 "--test-ns-regex"  "^example\\..*-test$"
                  "--output"         "target/coverage"]}
 
   ;; Same as :coverage but also generates the built-in HTML report:
@@ -35,4 +36,5 @@
                  "--custom-report"  "cloverage.coverage.cobertura/report"
                  "--html"
                  "--ns-regex"       "^example\\..*"
+                 "--test-ns-regex"  "^example\\..*-test$"
                  "--output"         "target/coverage"]}}}
