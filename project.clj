@@ -11,7 +11,7 @@
                                      :username      :env/clojars_username
                                      :password      :env/clojars_password
                                      :sign-releases false}]]
-  ;; Run coverage only on the example namespace to demonstrate the reporter.
-  ;; Remove or adjust :ns-regex when using this reporter in your own project.
+  :source-paths ["src"]
+  :test-paths   ["dev" "test"]
   :cloverage {:ns-regex [#"^example\..*"]
               :output   "target/coverage"})

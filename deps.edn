@@ -6,12 +6,14 @@
  :aliases
  {;; Run tests with: clj -M:test
   ;;
-  ;; Uses clojure.main -e to evaluate an inline test runner — no extra
-  ;; dependencies required. Exits non-zero when any test fails or errors.
+  ;; Uses cognitect-labs/test-runner. Discovers tests automatically under
+  ;; the "test" directory — no need to hard-code namespace names.
   :test
-  {:extra-paths ["test"]
-   :main-opts   ["-e"
-                 "(require 'example.core-test 'clojure.test)(let [r (clojure.test/run-tests 'example.core-test)](System/exit (if (pos? (+ (:fail r) (:error r))) 1 0)))"]}
+  {:extra-paths ["dev" "test"]
+   :extra-deps  {io.github.cognitect-labs/test-runner
+                 {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+   :main-opts   ["-m" "cognitect.test-runner"]
+   :exec-fn     cognitect.test-runner.api/test}
 
   ;; Run cloverage with the Cobertura XML reporter:
   ;;   clj -M:coverage
@@ -19,24 +21,20 @@
   ;; Limit which namespaces are instrumented with --ns-regex (remove or
   ;; adjust when using this reporter in your own project).
   :coverage
-  {:extra-paths ["test"]
+  {:extra-paths ["dev" "test"]
    :extra-deps  {cloverage/cloverage {:mvn/version "1.2.4"}}
    :main-opts   ["-m" "cloverage.coverage"
                  "--custom-report"  "cloverage.coverage.cobertura/report"
                  "--ns-regex"       "^example\\..*"
-                 "--test-ns-regex"  "^example\\..*-test$"
-                 "--fail-threshold" "0"
                  "--output"         "target/coverage"]}
 
   ;; Same as :coverage but also generates the built-in HTML report:
   ;;   clj -M:coverage-html
   :coverage-html
-  {:extra-paths ["test"]
+  {:extra-paths ["dev" "test"]
    :extra-deps  {cloverage/cloverage {:mvn/version "1.2.4"}}
    :main-opts   ["-m" "cloverage.coverage"
                  "--custom-report"  "cloverage.coverage.cobertura/report"
                  "--html"
                  "--ns-regex"       "^example\\..*"
-                 "--test-ns-regex"  "^example\\..*-test$"
-                 "--fail-threshold" "0"
                  "--output"         "target/coverage"]}}}
